@@ -113,3 +113,75 @@ input {
     font-size: 22px;
   }
 }
+
+.create {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgb(26, 26, 26);
+  display: flex;
+  flex-direction: column;
+  // justify-content: center;
+  gap: 8px;
+  width: 100%;
+  border-bottom: 2px solid rgb(0, 187, 255);
+  border-radius: 8px;
+  align-items: center;
+  padding: 20px;
+
+  .inputs {
+  }
+
+  input {
+    font-size: 22px;
+  }
+  button:not(.submit) {
+    font-size: 18px;
+    width: 200px;
+    margin-bottom: 8px;
+    background-color: rgb(0, 187, 255);
+    border: none;
+  }
+}
+
+@media (min-width: 500px) {
+  form.create {
+    background-color: red;
+    top: 50%;
+    left: 50%;
+    max-width: 250px;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.btns {
+  width: 100%;
+  display: flex;
+  margin-top: 4px;
+  align-items: center;
+  padding: 0px 8px;
+  justify-content: space-between;
+  padding: -20px;
+  .left {
+    display: flex;
+    gap: 25px;
+  }
+  .right {
+    button {
+      background-color: rgb(0, 157, 255);
+      border: 0px;
+      font-size: 19px;
+    }
+  }
+}
+
+.add-btn-outer {
+  background-color: rgb(0, 125, 179);
+  padding: 4px 18px;
+  border-radius: 6px;
+  padding-bottom: 2.5px;
+  display: inline-block;
+  font-size: 18px;
+  color: white;
+  margin-left: 25px;
+}
