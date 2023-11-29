@@ -1,21 +1,63 @@
 import { useEffect, useState, useRef } from "react";
-import { FaChevronLeft, FaCross, FaPlus } from "react-icons/fa";
+import {
+  FaChevronDown,
+  FaChevronLeft,
+  FaChevronUp,
+  FaCross,
+  FaPlus,
+} from "react-icons/fa";
 import { FiPlus } from "react-icons/fi";
 import { MdClose } from "react-icons/md";
 function App() {
   const [payments, setPayments] = useState(
     JSON.parse(localStorage.getItem("payments")) || [
       { type: "other", money: 2830, description: "Initial Money" },
-      { type: "invest", profit: -175, invested: 535, name: "Semines" },
-      { type: "invest", profit: 722, invested: 550, name: "Candian Solari" },
-      { type: "invest", profit: 800, invested: 1600, name: "Candian Solari" },
-      { type: "invest", profit: -210, invested: 480, name: "Anc Mining" },
-      { type: "invest", profit: -2096, invested: 2400, name: "Splyt" },
+      {
+        type: "invest",
+        profit: -175,
+        invested: 535,
+        name: "Semines",
+        link: "https://www.siemensh5.com/#/",
+        history: [],
+      },
+      {
+        type: "invest",
+        profit: 722,
+        invested: 550,
+        name: "Candian Solari",
+        link: "https://www.canadiansolari.com/index",
+        history: [],
+      },
+      {
+        type: "invest",
+        profit: 800,
+        invested: 1600,
+        name: "Candian Solari",
+        link: "https://www.canadiansolari.com/index",
+        history: [],
+      },
+      {
+        type: "invest",
+        profit: -210,
+        invested: 480,
+        name: "Anc Mining",
+        link: "https://ancmining.cc",
+        history: [{ money: 270 }],
+      },
+      {
+        type: "invest",
+        profit: -2096,
+        invested: 2400,
+        name: "Splyt",
+        link: "https://www.splytrent.co",
+        history: [{ money: 152 }, { money: 152 }],
+      },
       { type: "other", money: 2000, description: "money added" },
     ]
   );
   const [create, setCreate] = useState(false);
   const [selected, setSelected] = useState(0);
+  const [opened, setOpened] = useState(0);
   const [add, setAdd] = useState("");
   const inputRef = useRef(null);
   useEffect(() => {
@@ -35,7 +77,12 @@ function App() {
 
   function handleFormSubmit(e, p_index) {
     e.preventDefault();
+    let d = new Date();
     payments[p_index].profit += +add;
+    payments[p_index].history.push({
+      money: +add,
+      date: d.toDateString() + " " + d.toTimeString().split(" G")?.[0],
+    });
     setPayments([...payments]);
     setSelected(-1);
     setAdd("");
@@ -48,13 +95,24 @@ function App() {
         setSelected(-1);
       } else {
         payments[p_index].profit += +add;
+        let d = new Date();
+        payments[p_index].history.push({
+          money: +add,
+          date: d.toDateString() + " " + d.toTimeString().split(" G")?.[0],
+        });
         setPayments([...payments]);
         setAdd("");
+        setSelected(-1);
       }
     }
   }
-  function addRecord(record) {
+  function addRecord(record, history) {
     setPayments((p) => [...p, record]);
+  }
+
+  function handleOpened(p_index) {
+    if (opened == p_index) setOpened(-1);
+    else setOpened(p_index);
   }
 
   const [total, setTotal] = useState(0);
@@ -63,29 +121,68 @@ function App() {
       {payments.map((payment, p_index) => {
         if (payment.type == "invest") {
           return (
-            <div className="payment" key={p_index}>
-              <p className={"profit " + (payment.profit < 0 ? "neg" : "pos")}>
-                {payment.profit}
-              </p>
-              <p className="invested">{payment.invested}</p>
-              <FiPlus
-                className="add-btn"
-                onClick={(e) => onPlusClick(e, p_index)}
-              />
-              {selected == p_index ? (
-                <form action="" onSubmit={(e) => handleFormSubmit(e, p_index)}>
-                  <input
-                    type="text"
-                    value={add}
-                    ref={inputRef}
-                    onChange={(e) => setAdd(e.target.value)}
-                    name="add"
-                  />
-                </form>
-              ) : (
-                <p className="description">{payment.name}</p>
+            <>
+              <div className="payment" key={p_index}>
+                <p
+                  className={"profit " + (payment.profit < 0 ? "neg" : "pos")}
+                  onClick={() => handleOpened(p_index)}
+                >
+                  {payment.profit}
+                </p>
+                <p className="invested">{payment.invested}</p>
+                <FiPlus
+                  className="add-btn"
+                  onClick={(e) => onPlusClick(e, p_index)}
+                />
+                {selected == p_index ? (
+                  <form
+                    action=""
+                    onSubmit={(e) => handleFormSubmit(e, p_index)}
+                  >
+                    <input
+                      type="text"
+                      value={add}
+                      ref={inputRef}
+                      onChange={(e) => setAdd(e.target.value)}
+                      name="add"
+                    />
+                  </form>
+                ) : (
+                  <>
+                    <p
+                      className="description"
+                      onClick={() => open(payment.link)}
+                    >
+                      {payment.name}
+                    </p>
+                  </>
+                )}
+              </div>
+              {opened == p_index && payment.history.length > 0 && (
+                <div className="data">
+                  <p id="history-head">History: </p>
+                  <div className="history">
+                    {payment.history.map((h, h_index) => {
+                      return (
+                        <div
+                          className="history-item"
+                          key={p_index + "x" + h_index}
+                        >
+                          <p className="history-money">{h.money}</p>
+                          <p className="history-date">{h?.date}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="total-got">
+                    <div className="text">Total: </div>
+                    <div className="value">
+                      {payment.invested + payment.profit}
+                    </div>
+                  </div>
+                </div>
               )}
-            </div>
+            </>
           );
         } else if (payment.type == "other") {
           return (
@@ -146,6 +243,8 @@ function Create({ addRecord, onClose }) {
             profit,
             invested: +invest,
             name: e.target.name.value,
+            link: e.target.link.value,
+            history: [],
           });
           onClose();
         }}
@@ -163,6 +262,7 @@ function Create({ addRecord, onClose }) {
           onChange={(e) => setProfit(e.target.value)}
         />
         <input type="text" placeholder="name" name="name" />
+        <input type="text" placeholder="link" name="link" />
         {Buttons}
       </form>
     );
@@ -191,6 +291,11 @@ function Create({ addRecord, onClose }) {
       <div className="create">
         <button onClick={() => setType("invest")}>Invest</button>
         <button onClick={() => setType("money")}>Add Money</button>
+        <div className="btns">
+          <div className="left">
+            <MdClose onClick={onClose} />
+          </div>
+        </div>
       </div>
     );
 }
