@@ -2,15 +2,17 @@ import { useEffect, useState, useRef } from "react";
 import { FaPlus } from "react-icons/fa";
 import { FiPlus } from "react-icons/fi";
 function App() {
-  const [payments, setPayments] = useState([
-    { type: "other", money: 2830, description: "Initial Money" },
-    { type: "invest", profit: -175, invested: 535, name: "Semines" },
-    { type: "invest", profit: 722, invested: 550, name: "Candian Solari" },
-    { type: "invest", profit: 800, invested: 1600, name: "Candian Solari" },
-    { type: "invest", profit: -210, invested: 480, name: "Anc Mining" },
-    { type: "invest", profit: -2096, invested: 2400, name: "Splyt" },
-    { type: "other", money: 2000, description: "money added" },
-  ]);
+  const [payments, setPayments] = useState(
+    JSON.parse(localStorage.getItem("payments")) || [
+      { type: "other", money: 2830, description: "Initial Money" },
+      { type: "invest", profit: -175, invested: 535, name: "Semines" },
+      { type: "invest", profit: 722, invested: 550, name: "Candian Solari" },
+      { type: "invest", profit: 800, invested: 1600, name: "Candian Solari" },
+      { type: "invest", profit: -210, invested: 480, name: "Anc Mining" },
+      { type: "invest", profit: -2096, invested: 2400, name: "Splyt" },
+      { type: "other", money: 2000, description: "money added" },
+    ]
+  );
   const [selected, setSelected] = useState(0);
   const [add, setAdd] = useState("");
   const inputRef = useRef(null);
@@ -26,6 +28,7 @@ function App() {
       payments.filter((p) => p.type == "other").forEach((p) => (t += p.money));
       return t;
     });
+    localStorage.setItem("payments", JSON.stringify(payments));
   }, [payments]);
 
   const [total, setTotal] = useState(0);
