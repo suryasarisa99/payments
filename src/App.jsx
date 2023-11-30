@@ -6,13 +6,15 @@ import {
   FaCross,
   FaPlus,
 } from "react-icons/fa";
+import { saveAs } from "file-saver";
 import { FiPlus } from "react-icons/fi";
 import { MdClose } from "react-icons/md";
 function App() {
   const [payments, setPayments] = useState(
     JSON.parse(localStorage.getItem("payments")) || [
-      { type: "other", money: 2830, description: "Initial Money" },
+      { key: 0, type: "other", money: 2830, description: "Initial Money" },
       {
+        key: 1,
         type: "invest",
         profit: -175,
         invested: 535,
@@ -21,6 +23,7 @@ function App() {
         history: [],
       },
       {
+        key: 2,
         type: "invest",
         profit: 722,
         invested: 550,
@@ -29,6 +32,7 @@ function App() {
         history: [],
       },
       {
+        key: 3,
         type: "invest",
         profit: 800,
         invested: 1600,
@@ -37,6 +41,7 @@ function App() {
         history: [],
       },
       {
+        key: 4,
         type: "invest",
         profit: -210,
         invested: 480,
@@ -45,6 +50,7 @@ function App() {
         history: [{ money: 270 }],
       },
       {
+        key: 5,
         type: "invest",
         profit: -2096,
         invested: 2400,
@@ -52,7 +58,7 @@ function App() {
         link: "https://www.splytrent.co",
         history: [{ money: 152 }, { money: 152 }],
       },
-      { type: "other", money: 2000, description: "money added" },
+      { key: 6, type: "other", money: 2000, description: "money added" },
     ]
   );
   const [create, setCreate] = useState(false);
@@ -145,6 +151,8 @@ function App() {
                       ref={inputRef}
                       onChange={(e) => setAdd(e.target.value)}
                       name="add"
+                      autoSave={false}
+                      autoComplete={false}
                     />
                   </form>
                 ) : (
@@ -207,6 +215,32 @@ function App() {
           </div>
         )}
       </p>
+
+      <div
+        className="download-btn"
+        onClick={() => {
+          let file = new Blob([JSON.stringify(payments)], {
+            type: "application/json",
+          });
+          saveAs(file, "payments");
+        }}
+      >
+        download
+      </div>
+      <input
+        type="file"
+        onChange={(e) => {
+          let file = e.target.files[0];
+          if (file) {
+            let reader = new FileReader();
+            reader.readAsText(file);
+            reader.onload = (event) => {
+              console.log(event.target.result);
+              setPayments(JSON.parse(event.target.result));
+            };
+          }
+        }}
+      />
     </div>
   );
 }
