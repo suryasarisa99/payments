@@ -9,14 +9,23 @@ import {
 import { saveAs } from "file-saver";
 import { FiPlus } from "react-icons/fi";
 import { MdClose } from "react-icons/md";
+import Create from "./components/Create";
 function App() {
   const [payments, setPayments] = useState(
     JSON.parse(localStorage.getItem("payments")) || [
-      { key: 0, type: "other", money: 2830, description: "Initial Money" },
+      {
+        key: 0,
+        type: "other",
+        money: 2830,
+        description: "Initial Money",
+        history: [
+          { money: 2830, date: "testing", description: "Initial Money" },
+        ],
+      },
       {
         key: 1,
         type: "invest",
-        profit: -175,
+        profit: -197,
         invested: 535,
         name: "Semines",
         link: "https://www.siemensh5.com/#/",
@@ -63,9 +72,11 @@ function App() {
   );
   const [create, setCreate] = useState(false);
   const [selected, setSelected] = useState(0);
-  const [opened, setOpened] = useState(0);
+  const [opened, setOpened] = useState(-1);
+  const [openAddMoney, setOpenAddMoney] = useState(-1);
   const [add, setAdd] = useState("");
   const inputRef = useRef(null);
+  const fileInputRef = useRef(null);
   useEffect(() => {
     if (selected != -1) inputRef.current?.focus();
   }, [selected]);
@@ -96,6 +107,7 @@ function App() {
   function onPlusClick(e, p_index) {
     if (selected != p_index) {
       setSelected(p_index);
+      setOpenAddMoney(-1);
     } else {
       if (!add) {
         setSelected(-1);
@@ -112,6 +124,45 @@ function App() {
       }
     }
   }
+  function onAddMoneyPlusClick(e, p_index) {
+    if (openAddMoney != p_index) {
+      setOpenAddMoney(p_index);
+      setSelected(-1);
+    } else {
+      setOpenAddMoney(-1);
+    }
+  }
+
+  function onExport() {
+    let file = new Blob([JSON.stringify(payments, null, 4)], {
+      type: "application/json",
+    });
+    saveAs(file, "payments");
+  }
+  function onImport(e) {
+    let file = e.target.files[0];
+    if (file) {
+      let reader = new FileReader();
+      reader.readAsText(file);
+      reader.onload = (event) => {
+        console.log(event.target.result);
+        setPayments(JSON.parse(event.target.result));
+      };
+    }
+  }
+  function onAddMoneySubmit(e, p_index) {
+    e.preventDefault();
+    const d = new Date();
+    payments[p_index].history.push({
+      money: +e.target.money.value,
+      date: d.toDateString() + " " + d.toTimeString().split(" G")?.[0],
+      description: e.target.description.value,
+    });
+    payments[p_index].money += +e.target.money.value;
+    setPayments(() => [...payments]);
+    setOpenAddMoney(-1);
+  }
+
   function addRecord(record, history) {
     setPayments((p) => [...p, record]);
   }
@@ -166,7 +217,7 @@ function App() {
                   </>
                 )}
               </div>
-              {opened == p_index && payment.history.length > 0 && (
+              {opened == p_index && payment.history.length >= 0 && (
                 <div className="data">
                   <p id="history-head">History: </p>
                   <div className="history">
@@ -194,9 +245,50 @@ function App() {
           );
         } else if (payment.type == "other") {
           return (
-            <div className="other payment" key={p_index}>
-              <p className="money">{payment.money}</p>
-              <p className="description">{payment.description}</p>
+            <div className="other add-money-div " key={p_index}>
+              <div className="payment">
+                <p className="money" onClick={() => handleOpened(p_index)}>
+                  {payment.money}
+                </p>
+                <p className="description">{payment.description}</p>
+                <FiPlus
+                  className="add-btn"
+                  onClick={(e) => onAddMoneyPlusClick(e, p_index)}
+                />
+              </div>
+              {openAddMoney == p_index && (
+                <form
+                  className="add-money-body"
+                  onSubmit={(e) => onAddMoneySubmit(e, p_index)}
+                >
+                  <input
+                    type="text"
+                    name="description"
+                    placeholder="description"
+                  />
+                  <div className="row">
+                    <input type="text" name="money" placeholder="Money" />{" "}
+                    <button type="submit">Submit</button>
+                  </div>
+                </form>
+              )}
+              {opened == p_index && (
+                <div className="data">
+                  <div className="history">
+                    {payments[p_index].history.map((h, h_ind) => {
+                      return (
+                        <div
+                          className="history-item"
+                          key={p_index + "x" + h_ind}
+                        >
+                          <p className="history-money">{h.money}</p>
+                          <p className="history-date">{h?.description}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           );
         }
@@ -216,122 +308,20 @@ function App() {
         )}
       </p>
 
-      <div
-        className="download-btn"
-        onClick={() => {
-          let file = new Blob([JSON.stringify(payments, null, 4)], {
-            type: "application/json",
-          });
-          saveAs(file, "payments");
-        }}
-      >
-        download
+      <div className="end-btns">
+        <button className="download-btn" onClick={(e) => onExport()}>
+          Export
+        </button>
+        <button onClick={(e) => fileInputRef.current.click()}>Import</button>
       </div>
       <input
         type="file"
-        onChange={(e) => {
-          let file = e.target.files[0];
-          if (file) {
-            let reader = new FileReader();
-            reader.readAsText(file);
-            reader.onload = (event) => {
-              console.log(event.target.result);
-              setPayments(JSON.parse(event.target.result));
-            };
-          }
-        }}
+        onChange={(e) => onImport(e)}
+        style={{ display: "none" }}
+        ref={fileInputRef}
       />
     </div>
   );
-}
-
-function Create({ addRecord, onClose }) {
-  const [type, setType] = useState("invxest");
-  const [invest, setInvest] = useState("");
-  const [profit, setProfit] = useState("");
-
-  useEffect(() => {
-    setProfit(-1 * invest || "");
-  }, [invest]);
-
-  const Buttons = (
-    <div className="btns">
-      <div className="left">
-        <FaChevronLeft onClick={(e) => setType("x")} />
-        <MdClose onClick={onClose} />
-      </div>
-      <div className="right">
-        <button className="submit">Submit</button>
-      </div>
-    </div>
-  );
-
-  if (type == "invest")
-    return (
-      <form
-        className="create"
-        onSubmit={(e) => {
-          e.preventDefault();
-          addRecord({
-            type: "invest",
-            profit,
-            invested: +invest,
-            name: e.target.name.value,
-            link: e.target.link.value,
-            history: [],
-          });
-          onClose();
-        }}
-      >
-        <input
-          type="text"
-          placeholder="invest"
-          value={invest}
-          onChange={(e) => setInvest(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="profit"
-          value={profit}
-          onChange={(e) => setProfit(e.target.value)}
-        />
-        <input type="text" placeholder="name" name="name" />
-        <input type="text" placeholder="link" name="link" />
-        {Buttons}
-      </form>
-    );
-  else if (type == "money")
-    return (
-      <form
-        action=""
-        className="create"
-        onSubmit={(e) => {
-          e.preventDefault();
-          addRecord({
-            type: "other",
-            money: +e.target.money.value,
-            description: e.target.description.value,
-          });
-          onClose();
-        }}
-      >
-        <input type="text" name="money" placeholder="money" />
-        <input type="text" name="description" placeholder="description" />
-        {Buttons}
-      </form>
-    );
-  else
-    return (
-      <div className="create">
-        <button onClick={() => setType("invest")}>Invest</button>
-        <button onClick={() => setType("money")}>Add Money</button>
-        <div className="btns">
-          <div className="left">
-            <MdClose onClick={onClose} />
-          </div>
-        </div>
-      </div>
-    );
 }
 
 export default App;
