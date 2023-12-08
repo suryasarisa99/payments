@@ -9,7 +9,7 @@ body {
   background-color: black;
   color: white;
   font-family: sans-serif;
-  min-height: 100lvh;
+  min-height: 100dvh;
 }
 
 button {
@@ -256,7 +256,7 @@ input {
 .end-btns {
   display: flex;
   position: fixed;
-  bottom: 10px;
+  bottom: 16px;
   left: 50%;
   translate: -50%;
   width: 75%;
@@ -266,6 +266,8 @@ input {
     flex-grow: 1;
     border-radius: 0;
     background-color: $btn-color;
+    font-size: 17px;
+    padding: 10px 10px;
 
     border: 0px;
 
