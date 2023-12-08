@@ -1,0 +1,54 @@
+[
+  { "key": 1, "type": "other", "money": 2830, "description": "My Money" },
+  {
+    "key": 2,
+    "type": "invest",
+    "profit": -175,
+    "invested": 535,
+    "name": "Semines",
+    "link": "https://www.siemensh5.com/#/",
+    "history": []
+  },
+  {
+    "key": 3,
+    "type": "invest",
+    "profit": 722,
+    "invested": 550,
+    "name": "Candian Solari",
+    "link": "https://www.canadiansolari.com/index",
+    "history": []
+  },
+  {
+    "key": 4,
+    "type": "invest",
+    "profit": 873,
+    "invested": 1600,
+    "name": "Candian Solari",
+    "link": "https://www.canadiansolari.com/index",
+    "history": [{ "money": 73, "date": "Thu Nov 30 2023 19:23:57" }]
+  },
+  {
+    "key": 5,
+    "type": "invest",
+    "profit": -210,
+    "invested": 480,
+    "name": "Anc Mining",
+    "link": "https://ancmining.cc",
+    "history": [{ "money": 270, "date": "Tue Nov 28 2023 6:28:06" }]
+  },
+  {
+    "key": 6,
+    "type": "invest",
+    "profit": -1930,
+    "invested": 2400,
+    "name": "Splyt",
+    "link": "https://www.splytrent.co",
+    "history": [
+      { "money": 152, "date": "Tue Nov 28 2023 00:30:9" },
+      { "money": 152, "date": "Wed Nov 29 2023 00:38:32" },
+      { "money": 166, "date": "Thu Nov 30 2023 9:39:25" }
+    ]
+  },
+  { "type": "other", "money": 2000, "description": "money added" },
+  { "type": "other", "money": -110, "description": "Pan card update " }
+]

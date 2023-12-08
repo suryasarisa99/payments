@@ -219,7 +219,7 @@ function App() {
       <div
         className="download-btn"
         onClick={() => {
-          let file = new Blob([JSON.stringify(payments)], {
+          let file = new Blob([JSON.stringify(payments, null, 4)], {
             type: "application/json",
           });
           saveAs(file, "payments");
